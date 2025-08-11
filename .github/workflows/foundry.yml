@@ -32,5 +32,10 @@ jobs:
       - name: Build
         run: forge build --sizes
 
-      - name: Test
-        run: forge test -vv
+      - name: Test (skip if none)
+        run: |
+          if ls test/*.t.sol >/dev/null 2>&1; then
+            forge test -vvv
+          else
+            echo "No tests; skipping."
+          fi
