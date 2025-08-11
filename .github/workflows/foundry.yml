@@ -17,11 +17,17 @@ jobs:
           version: nightly # or 'stable'
 
       # Install deps that aren't in the repo
-      - name: Install libraries
+      - name: Install libraries (clone)
         run: |
-          forge --version
-          forge install --no-commit OpenZeppelin/openzeppelin-contracts@v5.0.2
-          forge install --no-commit foundry-rs/forge-std@v1.7.6
+          set -e
+          mkdir -p lib
+          if [ ! -d lib/openzeppelin-contracts ]; then
+            git clone --depth 1 --branch v5.0.2 https://github.com/OpenZeppelin/openzeppelin-contracts.git lib/openzeppelin-contracts
+          fi
+          if [ ! -d lib/forge-std ]; then
+            git clone --depth 1 --branch v1.7.6 https://github.com/foundry-rs/forge-std.git lib/forge-std
+          fi
+
 
       - name: Build
         run: forge build --sizes
