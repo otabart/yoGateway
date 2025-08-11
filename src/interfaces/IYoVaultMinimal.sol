@@ -6,7 +6,9 @@ interface IYoVaultMinimal {
     function asset() external view returns (address);
     function deposit(uint256 assets, address receiver) external returns (uint256 shares);
     /// @dev If enough liquidity: returns assets; otherwise returns 0 (async).
-    function requestRedeem(uint256 shares, address receiver, address owner) external returns (uint256 assetsOrRequestId);
+    function requestRedeem(uint256 shares, address receiver, address owner)
+        external
+        returns (uint256 assetsOrRequestId);
 
     // Quotes
     function convertToShares(uint256 assets) external view returns (uint256);

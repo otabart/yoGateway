@@ -13,7 +13,6 @@ pragma solidity 0.8.28;
  *  - redeem may be async (returns 0 when routed to the vault's requestRedeem). Gateway is oblivious; assets are delivered by the vault.
  *  - For third-party redemption (owner != sender), owner must approve the gateway to transfer shares.
  */
-
 import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
 import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
 import {ReentrancyGuard} from "@openzeppelin/contracts/utils/ReentrancyGuard.sol";
@@ -55,7 +54,7 @@ contract YoGateway is ReentrancyGuard {
     }
 
     // ========= Vault allow-list =========
-    mapping(address => bool) public isVaultAllowed;  // yoVault => allowed
+    mapping(address => bool) public isVaultAllowed; // yoVault => allowed
     mapping(address => address) public assetOfVault; // yoVault => underlying asset
     address[] private _vaultList;
 
@@ -67,8 +66,13 @@ contract YoGateway is ReentrancyGuard {
         // NOTE: Do not pre-seed vaults here. For proxy vaults, call addVault() or addVaultWithAsset() post-deploy.
     }
 
-    function addVault(address yoVault) external onlyOwner { _addVault(yoVault); }
-    function removeVault(address yoVault) external onlyOwner { _removeVault(yoVault); }
+    function addVault(address yoVault) external onlyOwner {
+        _addVault(yoVault);
+    }
+
+    function removeVault(address yoVault) external onlyOwner {
+        _removeVault(yoVault);
+    }
 
     function _addVault(address yoVault) internal {
         if (yoVault == address(0)) revert ZeroAddress();
@@ -87,6 +91,7 @@ contract YoGateway is ReentrancyGuard {
         _vaultList.push(yoVault);
         emit VaultAdded(yoVault, a);
     }
+
     event VaultAssetRefreshed(address indexed yoVault, address indexed oldAsset, address indexed newAsset);
 
     /// @notice Owner can register a vault and explicitly set its asset (useful for proxies that revert on asset()).
@@ -125,7 +130,9 @@ contract YoGateway is ReentrancyGuard {
         emit VaultRemoved(yoVault);
     }
 
-    function getVaults() external view returns (address[] memory) { return _vaultList; }
+    function getVaults() external view returns (address[] memory) {
+        return _vaultList;
+    }
 
     // ========= Events =========
     event GatewayDeposit(
@@ -149,12 +156,11 @@ contract YoGateway is ReentrancyGuard {
 
     // ========= Write: deposit & redeem =========
 
-    function deposit(
-        address yoVault,
-        uint256 assets,
-        address receiver,
-        uint32 partnerId
-    ) external nonReentrant returns (uint256 sharesOut) {
+    function deposit(address yoVault, uint256 assets, address receiver, uint32 partnerId)
+        external
+        nonReentrant
+        returns (uint256 sharesOut)
+    {
         if (!isVaultAllowed[yoVault]) revert VaultNotAllowed();
         address asset = assetOfVault[yoVault];
         if (asset == address(0)) {
@@ -176,13 +182,11 @@ contract YoGateway is ReentrancyGuard {
         emit GatewayDeposit(partnerId, yoVault, msg.sender, receiver, assets, sharesOut);
     }
 
-    function redeem(
-        address yoVault,
-        uint256 shares,
-        address receiver,
-        address ownerOfShares,
-        uint32 partnerId
-    ) external nonReentrant returns (uint256 assetsOrRequestId) {
+    function redeem(address yoVault, uint256 shares, address receiver, address ownerOfShares, uint32 partnerId)
+        external
+        nonReentrant
+        returns (uint256 assetsOrRequestId)
+    {
         if (!isVaultAllowed[yoVault]) revert VaultNotAllowed();
         if (ownerOfShares == address(0) || receiver == address(0)) revert ZeroAddress();
 
@@ -194,15 +198,7 @@ contract YoGateway is ReentrancyGuard {
 
         bool instant = assetsOrRequestId > 0;
 
-        emit GatewayRedeem(
-            partnerId,
-            yoVault,
-            ownerOfShares,
-            receiver,
-            shares,
-            assetsOrRequestId,
-            instant
-        );
+        emit GatewayRedeem(partnerId, yoVault, ownerOfShares, receiver, shares, assetsOrRequestId, instant);
     }
 
     // ========= Read helpers =========
@@ -235,6 +231,7 @@ contract YoGateway is ReentrancyGuard {
     }
     // ========= Allowance helpers =========
     /// @notice Returns the current allowance of `owner` for shares of the given yoVault to this gateway.
+
     function getShareAllowance(address yoVault, address owner_) external view returns (uint256) {
         return IERC20(yoVault).allowance(owner_, address(this));
     }
