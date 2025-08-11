@@ -1,0 +1,30 @@
+name: CI
+
+on:
+  push:
+  pull_request:
+
+jobs:
+  foundry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Install Foundry
+        uses: foundry-rs/foundry-toolchain@v1
+        with:
+          version: nightly # or 'stable'
+
+      # Install deps that aren't in the repo
+      - name: Install libraries
+        run: |
+          forge --version
+          forge install --no-commit OpenZeppelin/openzeppelin-contracts@v5.0.2
+          forge install --no-commit foundry-rs/forge-std@v1.7.6
+
+      - name: Build
+        run: forge build --sizes
+
+      - name: Test
+        run: forge test -vv
