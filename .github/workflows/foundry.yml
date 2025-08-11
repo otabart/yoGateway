@@ -32,10 +32,10 @@ jobs:
       - name: Build
         run: forge build --sizes
 
-      - name: Test (skip if none)
-        run: |
-          if ls test/*.t.sol >/dev/null 2>&1; then
-            forge test -vvv
-          else
-            echo "No tests; skipping."
-          fi
+      - name: Test
+        if: ${{ hashFiles('test/*.t.sol') != '' }}
+        run: forge test -vvv
+
+      - name: Skip tests (no files)
+        if: ${{ hashFiles('test/*.t.sol') == '' }}
+        run: echo "No tests; skipping."
