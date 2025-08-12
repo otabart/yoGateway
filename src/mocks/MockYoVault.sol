@@ -14,14 +14,14 @@ contract MockYoVault is MockERC20, IYoVaultMinimal {
     MockERC20 public immutable assetToken; // underlying
     bool public instant;
 
-    constructor(address _asset, bool _instant)
-        MockERC20("MockShares", "MSHARE", 18)
-    {
+    constructor(address _asset, bool _instant) MockERC20("MockShares", "MSHARE", 18) {
         assetToken = MockERC20(_asset);
         instant = _instant;
     }
 
-    function setInstant(bool v) external { instant = v; }
+    function setInstant(bool v) external {
+        instant = v;
+    }
 
     // IYoVaultMinimal
     function asset() external view override returns (address) {
@@ -51,8 +51,19 @@ contract MockYoVault is MockERC20, IYoVaultMinimal {
     }
 
     // Quotes
-    function convertToShares(uint256 assets) external pure override returns (uint256) { return assets; }
-    function convertToAssets(uint256 shares) external pure override returns (uint256) { return shares; }
-    function previewDeposit(uint256 assets) external pure override returns (uint256) { return assets; }
-    function previewRedeem(uint256 shares) external pure override returns (uint256) { return shares; }
+    function convertToShares(uint256 assets) external pure override returns (uint256) {
+        return assets;
+    }
+
+    function convertToAssets(uint256 shares) external pure override returns (uint256) {
+        return shares;
+    }
+
+    function previewDeposit(uint256 assets) external pure override returns (uint256) {
+        return assets;
+    }
+
+    function previewRedeem(uint256 shares) external pure override returns (uint256) {
+        return shares;
+    }
 }

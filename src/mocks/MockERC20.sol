@@ -14,7 +14,9 @@ contract MockERC20 {
     event Approval(address indexed owner, address indexed spender, uint256);
 
     constructor(string memory n, string memory s, uint8 d) {
-        name = n; symbol = s; decimals = d;
+        name = n;
+        symbol = s;
+        decimals = d;
     }
 
     function transfer(address to, uint256 amt) external returns (bool) {
@@ -38,7 +40,9 @@ contract MockERC20 {
 
     function _transfer(address from, address to, uint256 amt) internal {
         require(balanceOf[from] >= amt, "bal");
-        unchecked { balanceOf[from] -= amt; }
+        unchecked {
+            balanceOf[from] -= amt;
+        }
         balanceOf[to] += amt;
         emit Transfer(from, to, amt);
     }
@@ -51,7 +55,10 @@ contract MockERC20 {
 
     function burn(address from, uint256 amt) public {
         require(balanceOf[from] >= amt, "bal");
-        unchecked { balanceOf[from] -= amt; totalSupply -= amt; }
+        unchecked {
+            balanceOf[from] -= amt;
+            totalSupply -= amt;
+        }
         emit Transfer(from, address(0), amt);
     }
 }
