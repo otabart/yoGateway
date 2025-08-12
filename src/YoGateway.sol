@@ -26,6 +26,9 @@ contract YoGateway is ReentrancyGuard {
     error NotPendingOwner();
     error ZeroAddress();
     error VaultNotAllowed();
+    error ZeroAmount();
+    error ZeroReceiver();
+    error NoCode();
 
     // ========= Ownership (two-step) =========
     address public owner;
@@ -76,7 +79,8 @@ contract YoGateway is ReentrancyGuard {
 
     function _addVault(address yoVault) internal {
         if (yoVault == address(0)) revert ZeroAddress();
-        require(yoVault.code.length > 0, "Vault has no code");
+        if (yoVault.code.length == 0) revert NoCode();
+        if (yoVault.code.length == 0) revert NoCode();
         if (isVaultAllowed[yoVault]) return; // idempotent
         address a;
         // Try to resolve asset() from the vault (proxy should forward). If it reverts, owner can use addVaultWithAsset.
@@ -97,7 +101,8 @@ contract YoGateway is ReentrancyGuard {
     /// @notice Owner can register a vault and explicitly set its asset (useful for proxies that revert on asset()).
     function addVaultWithAsset(address yoVault, address assetAddr) external onlyOwner {
         if (yoVault == address(0) || assetAddr == address(0)) revert ZeroAddress();
-        require(yoVault.code.length > 0, "Vault has no code");
+        if (yoVault.code.length == 0) revert NoCode();
+        if (yoVault.code.length == 0) revert NoCode();
         if (!isVaultAllowed[yoVault]) {
             isVaultAllowed[yoVault] = true;
             _vaultList.push(yoVault);
@@ -162,6 +167,8 @@ contract YoGateway is ReentrancyGuard {
         returns (uint256 sharesOut)
     {
         if (!isVaultAllowed[yoVault]) revert VaultNotAllowed();
+        if (assets == 0) revert ZeroAmount();
+        if (receiver == address(0)) revert ZeroReceiver();
         address asset = assetOfVault[yoVault];
         if (asset == address(0)) {
             // Fallback for proxies added without known asset at the time
@@ -188,7 +195,9 @@ contract YoGateway is ReentrancyGuard {
         returns (uint256 assetsOrRequestId)
     {
         if (!isVaultAllowed[yoVault]) revert VaultNotAllowed();
-        if (ownerOfShares == address(0) || receiver == address(0)) revert ZeroAddress();
+        if (ownerOfShares == address(0)) revert ZeroAddress();
+        if (receiver == address(0)) revert ZeroReceiver();
+        if (shares == 0) revert ZeroAmount();
 
         // Pull shares from the true owner into the gateway for this tx (sponsored flow)
         IERC20(yoVault).safeTransferFrom(ownerOfShares, address(this), shares);
@@ -229,9 +238,9 @@ contract YoGateway is ReentrancyGuard {
         token.forceApprove(spender, 0);
         token.forceApprove(spender, amount);
     }
+
     // ========= Allowance helpers =========
     /// @notice Returns the current allowance of `owner` for shares of the given yoVault to this gateway.
-
     function getShareAllowance(address yoVault, address owner_) external view returns (uint256) {
         return IERC20(yoVault).allowance(owner_, address(this));
     }

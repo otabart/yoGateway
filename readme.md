@@ -14,8 +14,8 @@ It allows developers to:
 The following vaults are supported by YoGateway on **Base chain**:
 
 - **yoUSD**: `0x0000000f2eb9f69274678c76222b35eec7588a65`
-- **yoBTC**:  `0xbCbc8cb4D1e8ED048a6276a5E94A3e952660BcbC`
-- **yoETH**:  `0x3a43aec53490cb9fa922847385d82fe25d0e9de7`
+- **yoBTC**: `0xbCbc8cb4D1e8ED048a6276a5E94A3e952660BcbC`
+- **yoETH**: `0x3a43aec53490cb9fa922847385d82fe25d0e9de7`
 
 ---
 
@@ -35,7 +35,7 @@ Common scenarios for using YoGateway:
 ### Approvals Required
 
 - **Deposits**:  
-  The user must approve YoGateway to spend their _underlying asset_ (e.g., USDC, DAI, ETH) for the target yoVault.
+  The user must approve YoGateway to spend their _underlying asset_ (e.g., USDC, cbBTC, WETH) for the target yoVault.
 - **Redemptions**:  
   The user must approve YoGateway to spend their _yoVault shares_ (ERC-20) for the target yoVault.
 
